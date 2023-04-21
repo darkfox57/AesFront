@@ -1,23 +1,21 @@
 import React from 'react'
-import Button from '../../utils/Button/Button'
+
 import {
   CardContainer,
   CenterCard,
   ContainerIcon,
   ContainerInfo,
 } from './CardTaller.Styled'
+import Button from '../../utils/Button/Button'
 const CardTaller = ({ icon, title, parraf }) => {
   return (
     <CardContainer>
       <CenterCard>
         <ContainerIcon>{icon}</ContainerIcon>
         <ContainerInfo>
-          <p>{title}</p>
+          <h5>{title}</h5>
           <p>{parraf}</p>
         </ContainerInfo>
-        <div>
-          <Button type={'secondary'} size={'sm'} text={'Readme'} link={'/'} />
-        </div>
       </CenterCard>
     </CardContainer>
   )

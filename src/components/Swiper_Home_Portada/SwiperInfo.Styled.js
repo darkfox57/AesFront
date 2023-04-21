@@ -5,11 +5,8 @@ export const TextMainContainer = styled.div`
   color: white;
   position: absolute;
   z-index: 40;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 600px;
   display: flex;
+  min-width: 300px;
   flex-direction:column;
   gap: 5px 0;
   p{

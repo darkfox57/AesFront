@@ -1,90 +1,159 @@
-import React, { useState } from 'react'
+import React, { useState, useRef } from 'react'
 import { useForm } from 'react-hook-form'
+import { useDispatch } from 'react-redux'
 
 import TextInput from '../../utils/TextInput/TextInput'
-import SelectInput from '../../utils/SelectInput/SelectInput'
 
-import Button from '../../utils/Button/Button'
 import CloseButton from '../../utils/CloseButton/CloseButton_Styles'
 
-import info from './data.json'
-
 import Desenfoque from '../../utils/Div_Desenfoque/Div_Desenfoque.Styles'
-import Form_Styled from '../../utils/Form_Involucrate/Form_Involucrate.Styles'
+import {
+  Form_Styled,
+  WorkShopContainer,
+  RadioButtonContainer,
+  SubmitButton,
+} from '../../utils/Form_Involucrate/Form_Involucrate.Styles'
 
-//Reutilize los componentes que creo emma anteriormente
-//Creo un nuevo data.json para tenerlo de referencia y completar campos
+import { addFormInstitution } from '../../redux/actions/form_actions'
 
-export default function Form_Instituciones({ isOpen }) {
+//desestructuramos ambas props recibidas en showForm
+//en la funcion closemodal modificamos el estado del padre (involucrate) en '' para poder reabrir el form a futuro
+
+export default function Form_Instituciones({ isOpen, setMainForm, areas }) {
+  const [modal, setModal] = useState(isOpen)
   const {
     register,
     handleSubmit,
     formState: { errors },
+    reset,
   } = useForm()
+  const dispatch = useDispatch()
+  const modalRef = useRef(null)
 
-  const [modal, setModal] = useState(isOpen)
-
-  const Submit = (data) => {
-    console.log(data)
-  }
+  const regexLetras = new RegExp('^[A-Za-zÁ-ÿ\\s]+$')
+  const regexMail = new RegExp('^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$')
+  const regexTelefono = new RegExp('^\\+(?:[0-9]-?){6,14}[0-9]$')
 
   const closeModal = (event) => {
     event.preventDefault()
     setModal(false)
+    setMainForm(event)
+  }
+
+  const handleModalVisibility = (event) => {
+    // si el clic ocurre fuera de la ventana modal, la cerramos
+    if (modalRef.current && !modalRef.current.contains(event.target)) {
+      setModal(false)
+      setMainForm(event)
+    }
+  }
+
+  const Submit = (data) => {
+    dispatch(addFormInstitution(data))
+    reset()
   }
 
   return (
     modal && (
-      <Desenfoque style={{ display: 'flex', flexDirection: 'column' }}>
-        <Form_Styled onSubmit={handleSubmit(Submit)}>
-          <h2>Postulacion de organizaciones</h2>
-          {/**Datos para los inputs */}
-          {info.text.map((data, index) => (
-            <TextInput
-              key={index}
-              register={register}
-              name={data.name}
-              label={data.label}
-              type={data.type}
-              required={data.required}
-              maxLength={data.maxLength}
-              pattern={data.pattern}
-              errors={errors}
-            />
-          ))}
+      <Desenfoque onClick={handleModalVisibility}>
+        <Form_Styled onSubmit={handleSubmit(Submit)} ref={modalRef}>
+          <h2>Postulacion de instituciones</h2>
+          <span className="subtitle">
+            ¿Tu institución está interesada en recibir nuestros talleres
+            totalmente gratuitos? Llena este forms para contactarnos contigo
+          </span>
 
-          {/**Datos para los selectores */}
-          {info.seleccion.map((data, index) => (
-            <SelectInput
-              key={index}
-              register={register}
-              name={data.name}
-              label={data.label}
-              option={data.option}
-              required={data.required}
-              errors={errors}
-            />
-          ))}
+          {/**Campo NombreOrganizacion (Texto) */}
+          <TextInput
+            register={register}
+            name="organization"
+            label="Nombre de la institución educativa: "
+            type="text"
+            required={true}
+            pattern={regexLetras}
+            errors={errors}
+          />
 
-          <div>
-            <h4>¿En qué area de salud desearía dictar el taller?</h4>
+          {/**Campo NombreInscriptor (Texto) */}
+          <TextInput
+            register={register}
+            name="fullname"
+            label="Nombre completo de quien inscribe: "
+            type="text"
+            required={true}
+            pattern={regexLetras}
+            errors={errors}
+          />
 
-            {/**Datos para los radiobutton */}
-            {info.radius.map((data, index) => (
-              <TextInput
-                key={index}
-                register={register}
-                name={data.name}
-                value={data.value}
-                label={data.label}
-                type={data.type}
-                required={data.required}
-                errors={errors}
-              />
-            ))}
-          </div>
+          {/**Campo Correo (Texto) */}
+          <TextInput
+            register={register}
+            name="email"
+            label="Correo de contacto: "
+            type="text"
+            required={true}
+            pattern={regexMail}
+            errors={errors}
+          />
 
-          <Button text="Enviar Formulario" type="primary" size="lg"></Button>
+          {/**Campo Celular (Texto) */}
+          <TextInput
+            register={register}
+            name="phone"
+            label="Celular de contacto: "
+            type="text"
+            required={true}
+            maxLength={15}
+            pattern={regexTelefono}
+            errors={errors}
+          />
+
+          {/**Campo Puesto (Texto) */}
+          <TextInput
+            register={register}
+            name="post"
+            label="Cargo que ocupa dentro de la institución: "
+            type="text"
+            required={true}
+            pattern={regexLetras}
+            errors={errors}
+          />
+
+          {/**Campo Ciudad (Texto) */}
+          <TextInput
+            register={register}
+            name="city"
+            label="Indique su ciudad correspondiente: "
+            type="text"
+            required={true}
+            pattern={regexLetras}
+            errors={errors}
+          />
+
+          {/**Campo Talleres (RadioButton) */}
+          <WorkShopContainer>
+            <label>¿En qué area de salud desearía dictar el taller?</label>
+            <RadioButtonContainer>
+              {areas.map((data, index) => (
+                <TextInput
+                  key={index}
+                  register={register}
+                  name="area"
+                  type="radio"
+                  label={data.name}
+                  value={data._id}
+                  required={true}
+                  errors={errors}
+                />
+              ))}
+            </RadioButtonContainer>
+            {errors['area']?.type === 'required' && (
+              <span className="spanError">* La elección es obligatoría</span>
+            )}
+          </WorkShopContainer>
+
+          <SubmitButton type="submit">Enviar Formulario</SubmitButton>
+
           <CloseButton onClick={closeModal}>X</CloseButton>
         </Form_Styled>
       </Desenfoque>

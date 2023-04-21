@@ -1,22 +1,38 @@
 import React from 'react'
 
-const SelectInput = ({register,label, option,name,errors,required}) => {
+import { SelectInputStyled } from './SelectInput.Styles'
+
+const SelectInput = ({
+  Controller,
+  Select,
+  control,
+  options,
+  label,
+  required,
+  errors,
+}) => {
   return (
-    <div>
-        <label>{label}</label>
-       <select {...register(name,{
-        required:required
-       })}>
-          <option value={'es'}>Seleciona</option>
-          {option.map((el, index) => (
-            <option key={index} value={el}>
-              {el}
-            </option>
-          ))}
-        </select>
-        {errors[name]?.type === `required` && <p>{`El campo ${label} es requerido`}</p>}
-      {errors[name]?.type === `pattern` && <p>{`El formato del  ${label} es incorrecto`}</p>}
-    </div>
+    <>
+      <SelectInputStyled>
+        {label}
+        <Controller
+          name={'country'}
+          control={control}
+          rules={(required = true)}
+          render={({ field }) => (
+            <Select
+              {...field}
+              options={options}
+              isSearchable
+              placeholder="Seleccione un país"
+            />
+          )}
+        />
+        {errors.name?.type === `required` && (
+          <span>{`El campo Pais es requerido`}</span>
+        )}
+      </SelectInputStyled>
+    </>
   )
 }
 

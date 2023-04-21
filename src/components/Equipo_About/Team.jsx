@@ -1,43 +1,53 @@
 import React from 'react'
+import { useSelector } from 'react-redux'
 import Button from '../../utils/Button/Button'
 import CardTeam from './CardTeam'
 import { TeamFlex } from './Team.Styled'
-const data = [
-  {
-    name: 'Gerardo Osorio',
-    cargo: 'Coordinador(a) de logística',
-    img: 'https://cdn.shopify.com/s/files/1/1045/8368/files/Side-view-of-Tom-Welling-wearing-beige-trenchcoat-and-thick-eyeglasses-playing-the-role-of-Clark-Kent-in-the-2011-series-of-Smallville.jpg?v=1664361554',
-  },
-  {
-    name: 'Kevin Cotrina',
-    cargo: 'Relaciones Públicas',
-    img: 'https://cdn.shopify.com/s/files/1/1045/8368/files/Side-view-of-Tom-Welling-wearing-beige-trenchcoat-and-thick-eyeglasses-playing-the-role-of-Clark-Kent-in-the-2011-series-of-Smallville.jpg?v=1664361554',
-  },
-  {
-    name: 'Rick Quito',
-    cargo: 'Talento Humano',
-    img: 'https://cdn.shopify.com/s/files/1/1045/8368/files/Side-view-of-Tom-Welling-wearing-beige-trenchcoat-and-thick-eyeglasses-playing-the-role-of-Clark-Kent-in-the-2011-series-of-Smallville.jpg?v=1664361554',
-  },
-  {
-    name: 'Gerardo Osorio',
-    cargo: 'Ceo',
-    img: 'https://cdn.shopify.com/s/files/1/1045/8368/files/Side-view-of-Tom-Welling-wearing-beige-trenchcoat-and-thick-eyeglasses-playing-the-role-of-Clark-Kent-in-the-2011-series-of-Smallville.jpg?v=1664361554',
-  },
-]
+
+import SwiperCore, { Autoplay, Navigation, Pagination } from 'swiper'
+import { Swiper, SwiperSlide } from 'swiper/react'
+import 'swiper/swiper-bundle.min.css'
+
+SwiperCore.use([Autoplay, Navigation, Pagination])
+
 const Team = () => {
+  const files = useSelector((state) => state.gallery.files)
+  const videos = files.filter((file) => file.origin === 'videos')
   return (
     <TeamFlex>
-      <div className="grid">
-        {data.map((team, index) => (
-          <CardTeam
-            key={index}
-            name={team.name}
-            cargo={team.cargo}
-            img={team.img}
-          />
-        ))}
+      <h2>Testimonios</h2>
+      <div className="teamflex">
+        <Swiper
+          /*autoplay={{
+          delay: 5000,
+          disableOnInteraction:true,
+        }}*/
+          //loop={true}
+          navigation
+          // pauseOnMouseEnter
+          spaceBetween={20}
+          pagination={{ clickable: true }}
+          // slidesPerView={4}
+          breakpoints={{
+            // Configuración para pantallas más pequeñas
+            1458: {
+              slidesPerView: 2,
+            },
+            // Configuración para pantallas aún más pequeñas
+            1036: {
+              slidesPerView: 1,
+            },
+          }}
+          //centeredSlides={true}
+          //onSlideChange={(swiper) => console.log(swiper)}
+        >
+          {videos.map((video) => (
+            <SwiperSlide className="swiper-card" key={video._id}>
+              <CardTeam src={video.url} />
+            </SwiperSlide>
+          ))}
+        </Swiper>
       </div>
-      <Button size="lg" type="primary" text={'Contactanos'} link="/contacto" />
     </TeamFlex>
   )
 }

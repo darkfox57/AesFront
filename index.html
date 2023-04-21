@@ -2,11 +2,39 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <link rel="icon" type="image/png" href="/favi-aes.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Por un Perú sano</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/sweetalert2@10.16.6/dist/sweetalert2.min.css"
+    />
   </head>
   <body>
+    <!-- GetButton.io widget -->
+    <script type="text/javascript">
+      ;(function () {
+        var options = {
+          whatsapp: '+1(800) 123-45-67', // WhatsApp number
+          call_to_action: 'Envíanos un mensaje', // Call to action
+          button_color: '#FF6550', // Color of button
+          position: 'right', // Position may be 'right' or 'left'
+        }
+        var proto = 'https:',
+          host = 'getbutton.io',
+          url = proto + '//static.' + host
+        var s = document.createElement('script')
+        s.type = 'text/javascript'
+        s.async = true
+        s.src = url + '/widget-send-button/js/init.js'
+        s.onload = function () {
+          WhWidgetSendButton.init(host, proto, options)
+        }
+        var x = document.getElementsByTagName('script')[0]
+        x.parentNode.insertBefore(s, x)
+      })()
+    </script>
+    <!-- /GetButton.io widget -->
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>

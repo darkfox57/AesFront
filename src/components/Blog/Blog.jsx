@@ -1,6 +1,4 @@
-import React, { useEffect } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
-import { getAllBlogs } from '../../redux/actions/blog_actions'
+import React from 'react'
 import { BlogContainer } from './Blog.Styled'
 import BlogCard from './BlogCard'
 import BlogHeader from './BlogHeader'
@@ -15,24 +13,19 @@ import 'swiper/swiper-bundle.min.css'
 SwiperCore.use([Autoplay])
 SwiperCore.use([Navigation])
 
-const Blog = () => {
-  // usamos un useHook perzonalizado para la paginacion tipo slider
+const Blog = ({posts}) => {
+ 
 
-  const dispatch = useDispatch()
-  const posts = useSelector((state) => state.blog.blogs)
 
-  useEffect(() => {
-    dispatch(getAllBlogs())
-  }, [])
-
-  if (!posts.length) {
+  /*if (!posts.length) {
     return <p>Cargando eventos...</p>
-  }
+  }*/
+
   return (
     <BlogContainer>
       <BlogHeader />
       <Swiper
-        className="xd"
+      className='swiper'
         autoplay={{
           delay: 5000,
           disableOnInteraction: false,
@@ -40,21 +33,33 @@ const Blog = () => {
         loop={true}
         navigation
         spaceBetween={20} // gap
-        slidesPerView={3}
-        centeredSlides={true}
-        //onSwiper={(swiper) => console.log(swiper)}
+        breakpoints={{
+          1458: {
+            slidesPerView: 4
+          },
+          1080: {
+            slidesPerView: 3
+          },
+          754: {
+            slidesPerView: 2
+          },
+          480: {
+            slidesPerView: 1
+          }
+        }}
+        //centeredSlides={true}
       >
         {posts.map((post) => (
-          <SwiperSlide key={post._id} className="swiper-card">
-            <BlogCard
-              image={post.image}
-              title={post.title}
-              status={post.status}
-              date={post.createdAt}
-              slug={post.slug}
-            />
-          </SwiperSlide>
-        ))}
+            <SwiperSlide key={post._id} className="swiper-card">
+              <BlogCard
+                image={post.image}
+                title={post.title}
+                status={post.status}
+                date={post.createdAt}
+                slug={post.slug}
+              />
+            </SwiperSlide>
+          ))}
       </Swiper>
     </BlogContainer>
   )

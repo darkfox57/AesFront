@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import {
   IoBuildOutline,
   IoCalendarOutline,
@@ -7,92 +7,186 @@ import {
   IoImageOutline,
   IoMailUnreadOutline,
   IoNewspaperOutline,
+  IoPeopleOutline,
   IoSpeedometerOutline,
 } from 'react-icons/io5'
-import { Link } from 'react-router-dom'
+import { Link, NavLink, useLocation } from 'react-router-dom'
 import logo from '../../../assets/logo-pups-color.webp'
 import { ProfileMiniature, SideBarContent } from './sidebar.styled'
 
-export default function Sidebar() {
+export default function Sidebar({ user }) {
+  const [expand, setExpand] = useState(false)
+  const location = useLocation()
+  const user_role = localStorage.getItem('user_role')
+
   return (
     <>
       <SideBarContent>
         <img src={logo} alt="" />
         <ProfileMiniature>
           <img
-            src="https://static.vecteezy.com/system/resources/previews/002/275/847/original/male-avatar-profile-icon-of-smiling-caucasian-man-vector.jpg"
+            src={user.avatar}
             alt="Avatar de perfil para usuario administrador - Por un Perú Sano"
           />
           <div>
-            <span>Juanito el del Barrio</span>
-            <span>Editar Perfil</span>
+            <span>
+              {user.firstname} {user.lastname}
+            </span>
+            <Link to={`perfil/${user._id}`}>Editar Perfil</Link>
           </div>
         </ProfileMiniature>
         <nav>
           <li>
-            <Link to="/dashboard/">
+            <NavLink
+              to="/dashboard/"
+              className={({ isActive }) => (isActive ? 'current' : '')}
+            >
               <i>
                 <IoSpeedometerOutline />
               </i>
               Dashboard
-            </Link>
+            </NavLink>
           </li>
           <li>
-            <Link to="/dashboard/">
-              <i>
-                <IoHeartOutline />
-              </i>
-              Involucrate
-            </Link>
-          </li>
-          <li>
-            <Link to="/dashboard/">
-              <i>
-                <IoMailUnreadOutline />
-              </i>
-              Mensajes
-            </Link>
-          </li>
-          <li>
-            <Link to="/dashboard/">
-              <i>
-                <IoEarOutline />
-              </i>
-              Suscripciones
-            </Link>
-          </li>
-          <li>
-            <Link to="/dashboard/blog">
+            <NavLink
+              to="blog"
+              className={({ isActive }) => (isActive ? 'current' : '')}
+            >
               <i>
                 <IoNewspaperOutline />
               </i>
               Blogs
-            </Link>
+            </NavLink>
+            <div
+              className={`menuItems ${
+                location.pathname.includes('blog') ? 'expand' : ''
+              }`}
+            >
+              <NavLink to="blog/add-blog">Nuevo Blog</NavLink>
+              <NavLink to="blog/categorias">Categorías</NavLink>
+              <NavLink to="blog/tags">Etiquedas</NavLink>
+            </div>
           </li>
           <li>
-            <Link to="/dashboard/">
+            <NavLink
+              to="eventos"
+              className={({ isActive }) => (isActive ? 'current' : '')}
+            >
               <i>
                 <IoCalendarOutline />
               </i>
               Eventos
-            </Link>
+            </NavLink>
+            <div
+              className={`menuItems ${
+                location.pathname.includes('eventos') ? 'expand' : ''
+              }`}
+            >
+              <NavLink to="eventos/add-event">Nuevo Evento</NavLink>
+              <NavLink to="eventos/categorias">Categorías</NavLink>
+              <NavLink to="eventos/tags">Etiquedas</NavLink>
+              <NavLink to="eventos/participantes">Participantes</NavLink>
+            </div>
           </li>
           <li>
-            <Link to="/dashboard/">
+            <NavLink
+              to="involucrate"
+              className={({ isActive }) => (isActive ? 'current' : '')}
+            >
+              <i>
+                <IoHeartOutline />
+              </i>
+              Involucrate
+            </NavLink>
+            <div
+              className={`menuItems ${
+                location.pathname.includes('involucrate') ? 'expand' : ''
+              }`}
+            >
+              <NavLink to="involucrate/especialistas">Especialistas</NavLink>
+              <NavLink to="involucrate/instituciones">Instituciones</NavLink>
+              <NavLink to="involucrate/alianzas">Organizaciones</NavLink>
+            </div>
+          </li>
+          <li>
+            <NavLink
+              to="mensajes"
+              className={({ isActive }) => (isActive ? 'current' : '')}
+            >
+              <i>
+                <IoMailUnreadOutline />
+              </i>
+              Mensajes
+            </NavLink>
+          </li>
+          <li>
+            <NavLink
+              to="suscriptores"
+              className={({ isActive }) => (isActive ? 'current' : '')}
+            >
+              <i>
+                <IoEarOutline />
+              </i>
+              Suscripciones
+            </NavLink>
+          </li>
+          <li>
+            <NavLink
+              to="banner"
+              className={({ isActive }) => (isActive ? 'current' : '')}
+            >
               <i>
                 <IoImageOutline />
               </i>
               Banner Principal
-            </Link>
+            </NavLink>
           </li>
           <li>
-            <Link to="/dashboard/">
+            <NavLink
+              to="galeria-involucrate"
+              className={({ isActive }) => (isActive ? 'current' : '')}
+            >
               <i>
-                <IoBuildOutline />
+                <IoImageOutline />
               </i>
-              Configuración
-            </Link>
+              Galleria Involucrate
+            </NavLink>
           </li>
+          <li>
+            <NavLink
+              to="videos"
+              className={({ isActive }) => (isActive ? 'current' : '')}
+            >
+              <i>
+                <IoImageOutline />
+              </i>
+              Testimonios
+            </NavLink>
+          </li>
+          <li>
+            <NavLink
+              to="logos"
+              className={({ isActive }) => (isActive ? 'current' : '')}
+            >
+              <i>
+                <IoImageOutline />
+              </i>
+              Logos
+            </NavLink>
+          </li>
+          {user_role !== 'editor' && (
+            <li>
+              <NavLink
+                to="cuentas"
+                className={({ isActive }) => (isActive ? 'current' : '')}
+              >
+                <i>
+                  <IoPeopleOutline />
+                </i>
+                Usuarios
+              </NavLink>
+            </li>
+          )}
         </nav>
       </SideBarContent>
     </>

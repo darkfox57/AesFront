@@ -1,35 +1,49 @@
 import React from 'react'
 import {
   IoCaretDownOutline,
+  IoLogOutOutline,
   IoMailUnreadOutline,
   IoNotificationsOutline,
   IoSearchOutline,
 } from 'react-icons/io5'
-import { HeaderNotifications, ProfileMiniature } from './header.styles'
+import { useDispatch } from 'react-redux'
+import { useNavigate } from 'react-router'
+import { logOut } from '../../../redux/actions/account_actions'
+import Notifications from '../Notifications/Notifications'
+import { HeaderNotifications, LogOut, ProfileMiniature } from './header.styles'
 
-export default function Header() {
+export default function Header({ user }) {
+  const dispatch = useDispatch()
+  const handleLogout = async () => {
+    await dispatch(logOut()).finally(() => {
+      localStorage.removeItem('access_token')
+      localStorage.removeItem('user_id')
+      navigate('/login')
+    })
+  }
+  const navigate = useNavigate()
   return (
     <>
       <HeaderNotifications>
-        <i>
+        {/* <i>
           <IoMailUnreadOutline />
         </i>
         <i>
           <IoNotificationsOutline />
-        </i>
-        <i>
-          <IoSearchOutline />
-        </i>
+        </i> */}
       </HeaderNotifications>
       <ProfileMiniature>
         <img
-          src="https://static.vecteezy.com/system/resources/previews/002/275/847/original/male-avatar-profile-icon-of-smiling-caucasian-man-vector.jpg"
+          src={user.avatar}
           alt="Avatar de perfil para usuario administrador - Por un Perú Sano"
         />
-        <span>Juanito</span>
+        <span>{user.firstname}</span>
         <i>
           <IoCaretDownOutline />
         </i>
+        <LogOut onClick={handleLogout}>
+          <IoLogOutOutline />
+        </LogOut>
       </ProfileMiniature>
     </>
   )

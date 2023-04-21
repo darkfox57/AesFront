@@ -8,19 +8,15 @@ export const Patrocinadores_Styled = styled.div`
   position: relative;
   gap: 60px;
   padding: var(--section-padding);
-  margin-top: -150px;
   min-height: 600px;
   &::before {
-    content: "";
+    content: '';
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background-image: url(${({ image }) => image});
-    background-repeat: no-repeat;
-    background-size: cover;
-    background-attachment: fixed;
+    background: url(${({ image }) => image}) center center/cover no-repeat fixed;
     background-position: top center;
     opacity: 0.2; /* agregar opacidad */
     filter: brightness(70%); /* aplicar un filtro de brillo */
@@ -34,9 +30,13 @@ export const Logos_Container = styled.div`
   align-items: center;
   flex-wrap: wrap;
   gap: 50px;
-  z-index: 10;
-  img {
-    width: auto;
+   img {
+
+    filter: saturate(1.5);
+    border-radius: 100%;
+    overflow:hidden;
+    object-fit: cover;
+    width: 150px;
     height: 150px;
   }
 `

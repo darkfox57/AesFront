@@ -1,102 +1,139 @@
 import React, { useEffect, useState } from 'react'
+import { useForm } from 'react-hook-form'
 import ReactQuill from 'react-quill'
 import 'react-quill/dist/quill.snow.css'
 import { useDispatch, useSelector } from 'react-redux'
-import Button from '../../../../utils/Button/Button'
-import TextInput from '../../../../utils/TextInput/TextInput'
-//forms react
-import { useForm } from 'react-hook-form'
-import FileInput from '../../../../components/Form_Especialistas/FileInput'
-import { addBlog, getCategories } from '../../../../redux/actions/blog_actions'
+import Swal from 'sweetalert2'
+import withReactContent from 'sweetalert2-react-content'
+import { addBlog, getAllBlogs } from '../../../../redux/actions/blog_actions'
+import FileUploader from '../../../../utils/FileUploader/FileUploader'
+import PdfUploader from '../../../../utils/FileUploader/pdfUploader'
+import { modules } from '../../../../utils/Modules_quill/modules'
+import { FormBody } from './addBlog.styles'
 
 export default function AddBlog() {
   const dispatch = useDispatch()
   const categories = useSelector((state) => state.blog.categories)
+  const tags = useSelector((state) => state.blog.tags)
   const estado = useSelector((state) => state.blog.status)
-
-  useEffect(() => {
-    dispatch(getCategories())
-  }, [dispatch])
+  const postImg = useSelector((state) => state.file.fileUrl)
+  const postPdf = useSelector((state) => state.file.pdfUrl)
+  const MySwal = withReactContent(Swal)
+  const [sending, setSending] = useState(false)
 
   const [postContent, setPostContent] = useState('')
-  const [reqMessage, setReqMessage] = useState('')
-  const [imageUrl, setImageUrl] = useState('')
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm()
 
-  const handleData = (data) => {
-    data.description = postContent
-    const file = data.archivo[0]
-    const imgUrl = file
-      ? URL.createObjectURL(file)
-      : 'https://blog.oxfamintermon.org/wp-content/uploads/2014/11/ONG-copia-e1415635063990.jpg'
-    setImageUrl(imgUrl)
-
-    const formData = {
-      title: data.name,
-      description: data.description,
-      image: imageUrl,
-      category: data.category,
-      status: 'active',
-    }
-
-    dispatch(addBlog(formData))
-    estado === 'succeeded'
-      ? setReqMessage('Creado Correctamente')
-      : setReqMessage(estado)
-    console.log(estado)
+  const notification = async () => {
+    await MySwal.fire({
+      icon: 'success',
+      title: 'Genial',
+      text: 'La publicación se ha actualizado correctamente!',
+    })
   }
 
-  //*arreglar el scroll al cambiar la pagina para Andres **/
+  const errorNotify = async () => {
+    await MySwal.fire({
+      icon: 'error',
+      title: 'Oops...',
+      text: 'No se ha podido guardar cambios!',
+    })
+  }
+
+  const handleData = async (data) => {
+    const post = {
+      slug: data.title
+        .toLowerCase()
+        .trim()
+        .replace(/[\s\W-]+/g, '-'),
+      title: data.title,
+      description: postContent,
+      image: postImg,
+      categories: data.categories,
+      status: true,
+      tags: data.tags,
+      files: postPdf,
+      short_description: data.short_description,
+    }
+    try {
+      setSending(true)
+      await dispatch(addBlog(post)).finally(() => dispatch(getAllBlogs()))
+      return notification()
+    } catch (error) {
+      errorNotify()
+    } finally {
+      setSending(false)
+    }
+  }
+
   return (
     <>
       <h2>Crear Articulo de Blog</h2>
-      <form onSubmit={handleSubmit(handleData)}>
-        {/**Input Nombre */}
-        <TextInput
-          label="Nombre"
-          type="text"
-          name="name"
-          register={register}
-          errors={errors}
-          required={true}
-          pattern="^[A-Za-zÁ-ÿ\s]+$"
-        />
-        {/**Input Description */}
-        <label>
-          Descripción:
-          <ReactQuill
-            name="description"
-            value={postContent}
-            onChange={(value) => setPostContent(value)}
-          />
-        </label>
-        {/**Categoria map checkbox */}
-        {categories.map((category, index) => (
-          <label key={category._id}>
-            <TextInput
-              type="checkbox"
-              register={register}
-              value={category.name}
-              name={'category'}
-              errors={errors}
-              required={false}
-            />
-            {category.name}
+      <FormBody>
+        <form onSubmit={handleSubmit(handleData)}>
+          <label>
+            Titulo:
+            <input {...register('title', { required: true })} />
           </label>
-        ))}
-        {/**Categoria error  */}
-        {errors.categoria?.type === `required` && (
-          <p>Seleccione alguna categoria por favor</p>
-        )}
-        {/**Imagen  updale */}
-        <FileInput register={register} name="image" />
-        <button type="submit">Publicar</button>
-        <span>{reqMessage}</span>
-      </form>
+          <span>Cargar nueva imagen de portada:</span>
+          <FileUploader folder="blog" />
+          <label>
+            Descripción corta
+            <textarea
+              rows="5"
+              {...register('short_description', {
+                required: true,
+                maxLength: 160,
+              })}
+            />
+          </label>
+          <span>Descripción</span>
+          <div className="editor">
+            <ReactQuill
+              theme="snow"
+              value={postContent}
+              onChange={setPostContent}
+              className="editor-input"
+              modules={modules}
+            ></ReactQuill>
+          </div>
+          <p>Subir pdf</p>
+          <PdfUploader />
+          <div className="checkboxBlock">
+            <span>Categorias:</span>
+            {categories.map((category) => (
+              <label key={category.name}>
+                <input
+                  type="checkbox"
+                  value={category._id}
+                  {...register('categories')}
+                />
+                <span>{category.name}</span>
+              </label>
+            ))}
+          </div>
+          <div className="checkboxBlock">
+            <span>Etiquetas:</span>
+            {tags.map((tag) => (
+              <label key={tag._id}>
+                <input
+                  type="checkbox"
+                  value={tag._id}
+                  placeholder={tag.name}
+                  {...register('tags', {})}
+                />
+                <span>{tag.name}</span>
+              </label>
+            ))}
+          </div>
+
+          <input type="submit" />
+        </form>
+      </FormBody>
     </>
   )
 }

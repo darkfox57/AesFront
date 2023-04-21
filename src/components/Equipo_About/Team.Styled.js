@@ -3,18 +3,29 @@ import styled from 'styled-components'
 export const TeamFlex = styled.div`
   display: flex;
   flex-direction: column;
+  text-align: center;
+  color: var(--text-white);
+  background: var(--primary-blue);
+  padding: var(--section-padding);
+  gap: 32px;
+.teamflex {
+  display: flex;
+  flex-direction: column;
   row-gap: 50px;
   justify-content: center;
   align-items: center;
-  background: #2ecc71;
+  background: var(--primary-blue);
   height: max-content;
-  padding: var(--section-padding);
-  margin-bottom: 150px;
-  .grid {
+  & > div:first-child { 
+    display: flex;
+    justify-content: center;
+    align-items: center;
     width: 100%;
-    place-items: center;
-    display: grid;
-    gap: 30px;
-    grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr));
+  }
+  .swiper-card{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
   }
 `
